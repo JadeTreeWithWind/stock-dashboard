@@ -48,6 +48,7 @@
             >
               <NuxtImg
                 name="log-out"
+                alt="log-out"
                 class="h-4 w-4"
                 src="/icons/IcRoundLogOut.svg"
               />
@@ -61,7 +62,9 @@
 </template>
 
 <script setup lang="ts">
+import Avatar from "primevue/avatar";
 import Divider from "primevue/divider";
+import Popover from "primevue/popover";
 import { NAV_ITEMS } from "../consts";
 
 const currentRoute = useRoute();
