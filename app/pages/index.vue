@@ -22,7 +22,7 @@ const scriptUrl = "https://s3.tradingview.com/external-embedding/embed-widget-";
           :height="600"
         />
       </div>
-      <div class="md-col-span xl:col-span-2">
+      <div class="md:col-span-1 xl:col-span-2">
         <TradingViewWidget
           title="股票熱圖"
           :script-url="`${scriptUrl}stock-heatmap.js`"
