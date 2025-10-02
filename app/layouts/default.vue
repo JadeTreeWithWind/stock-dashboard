@@ -1,12 +1,14 @@
 <template>
   <div class="min-h-screen text-gray-400">
-    <!-- <Header /> -->
+    <Header />
     <div class="container py-10">
       <slot />
     </div>
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import Header from "../components/Header.vue";
+</script>
 
 <style lang="scss" scoped></style>

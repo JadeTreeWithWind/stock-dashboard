@@ -131,6 +131,10 @@
   --color-purple-500: #d13bff;
 }
 
+body {
+  font-family: "Noto Sans TC", "Inter", sans-serif;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

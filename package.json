@@ -10,18 +10,20 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@nuxt/fonts": "0.11.4",
+    "@nuxt/image": "1.11.0",
     "@pinia/nuxt": "^0.11.2",
     "@primeuix/themes": "^1.2.5",
-    "@tailwindcss/vite": "^4.1.13",
+    "@tailwindcss/vite": "^4.1.14",
     "nuxt": "^4.1.2",
     "pinia": "^3.0.3",
-    "primevue": "^4.3.9",
-    "tailwindcss": "^4.1.13",
+    "primevue": "^4.4.0",
+    "tailwindcss": "^4.1.14",
     "vue": "^3.5.22",
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
-    "@primevue/nuxt-module": "^4.3.9",
+    "@primevue/nuxt-module": "^4.4.0",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "typescript": "^5.9.3"
