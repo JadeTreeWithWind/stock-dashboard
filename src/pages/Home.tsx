@@ -24,7 +24,7 @@ const Home = () => {
               height={600}
             />
           </div>
-          <div className="md-col-span xl:col-span-2">
+          <div className="md:col-span-1 xl:col-span-2">
             <TradingViewWidget
               title="股票熱圖"
               scriptUrl={`${scriptUrl}stock-heatmap.js`}
@@ -36,7 +36,7 @@ const Home = () => {
         <section className="home-section grid w-full gap-8">
           <div className="h-full md:col-span-1 xl:col-span-1">
             <TradingViewWidget
-              title="即時新聞"
+              title="股市新聞"
               scriptUrl={`${scriptUrl}timeline.js`}
               config={TOP_STORIES_WIDGET_CONFIG}
               height={600}
