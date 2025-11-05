@@ -1,10 +1,11 @@
-import { Button } from "@/components/ui/button.tsx";
+import Header from "@/components/Header";
 
 const Home = () => {
   return (
-    <div className="flex h-screen items-center justify-center">
-      <Button>Home</Button>
-    </div>
+    <main>
+      <Header />
+      <div className="home-wrapper flex min-h-screen">Home</div>
+    </main>
   );
 };
 export default Home;
