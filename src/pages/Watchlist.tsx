@@ -4,7 +4,7 @@ const WatchList = () => {
   return (
     <main>
       <Header />
-      <div className="home-wrapper flex min-h-screen">watchlist</div>;
+      <div className="home-wrapper flex min-h-screen">watchlist</div>
     </main>
   );
 };

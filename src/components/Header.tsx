@@ -1,10 +1,11 @@
 import NavItems from "@/components/NavItems";
+import { Link } from "react-router";
 
 const Header = () => {
   return (
     <header className="header sticky top-0">
       <div className="header-wrapper container">
-        <a href="/">
+        <Link to="/">
           <img
             src="/assets/icons/logo.svg"
             alt="Signalist logo"
@@ -12,7 +13,7 @@ const Header = () => {
             height={32}
             className="h-8 w-auto cursor-pointer"
           />
-        </a>
+        </Link>
         <nav className="hidden sm:block">
           <NavItems />
         </nav>
