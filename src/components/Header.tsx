@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import SearchCommand from "@/components/SearchCommand.tsx";
+import ScrollToTop from "@/components/ScrollToTop.tsx";
 
 const Header = () => {
   const [open, setOpen] = useState(false);
@@ -32,6 +33,7 @@ const Header = () => {
         </nav>
         <SearchCommand open={open} onOpenChange={setOpen} />
       </div>
+      <ScrollToTop />
     </header>
   );
 };
