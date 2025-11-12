@@ -8,6 +8,7 @@ import {
   CommandItem,
 } from "@/components/ui/command";
 import { searchStocks, type StockWithWatchlistStatus } from "@/lib/api/search";
+import { useNavigate } from "react-router";
 
 type SearchCommandProps = {
   open: boolean;
@@ -18,6 +19,7 @@ const SearchCommand = ({ open, onOpenChange }: SearchCommandProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<StockWithWatchlistStatus[]>([]);
+  const navigate = useNavigate();
 
   const debouncedTerm = useMemo(() => searchTerm.trim(), [searchTerm]);
 
@@ -50,6 +52,7 @@ const SearchCommand = ({ open, onOpenChange }: SearchCommandProps) => {
     console.log(`Stock selected: ${symbol}`);
     // Optionally close the dialog after selection
     onOpenChange(false);
+    navigate(`/${symbol}`);
   };
 
   return (
