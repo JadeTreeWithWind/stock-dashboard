@@ -1,7 +1,10 @@
-import NavItems from "@/components/NavItems";
+// import NavItems from "@/components/NavItems";
+import { useState } from "react";
 import { Link } from "react-router";
+import SearchCommand from "@/components/SearchCommand.tsx";
 
 const Header = () => {
+  const [open, setOpen] = useState(false);
   return (
     <header className="header sticky top-0">
       <div className="header-wrapper container">
@@ -15,8 +18,19 @@ const Header = () => {
           />
         </Link>
         <nav className="hidden sm:block">
-          <NavItems />
+          {/*<NavItems/>*/}
+          <ul className="flex flex-col gap-3 p-2 font-medium sm:flex-row sm:gap-10">
+            <li>
+              <button
+                className="cursor-pointer transition-colors hover:text-yellow-500"
+                onClick={() => setOpen(true)}
+              >
+                搜尋
+              </button>
+            </li>
+          </ul>
         </nav>
+        <SearchCommand open={open} onOpenChange={setOpen} />
       </div>
     </header>
   );
