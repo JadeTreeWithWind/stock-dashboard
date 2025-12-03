@@ -9,14 +9,15 @@ const Header = () => {
   return (
     <header className="header sticky top-0">
       <div className="header-wrapper container">
-        <Link to="/">
+        <Link to="/" className="ml-2 flex items-center gap-2">
           <img
-            src="/assets/icons/logo.svg"
-            alt="Signalist logo"
+            src="/favicon.png"
+            alt="logo"
             width={140}
             height={32}
             className="h-8 w-auto cursor-pointer"
           />
+          <span className="text-3xl font-bold text-white">美股儀表板</span>
         </Link>
         <nav>
           {/*<NavItems/>*/}

@@ -300,7 +300,7 @@ export const BASELINE_WIDGET_CONFIG = (symbol: string) => ({
 export const TECHNICAL_ANALYSIS_WIDGET_CONFIG = (symbol: string) => ({
   symbol: symbol.toUpperCase(),
   colorTheme: "dark",
-  isTransparent: "true",
+  isTransparent: true,
   locale: "zh_TW",
   width: "100%",
   height: 400,
@@ -311,7 +311,7 @@ export const TECHNICAL_ANALYSIS_WIDGET_CONFIG = (symbol: string) => ({
 export const COMPANY_PROFILE_WIDGET_CONFIG = (symbol: string) => ({
   symbol: symbol.toUpperCase(),
   colorTheme: "dark",
-  isTransparent: "true",
+  isTransparent: true,
   locale: "zh_TW",
   width: "100%",
   height: 340,
@@ -320,7 +320,7 @@ export const COMPANY_PROFILE_WIDGET_CONFIG = (symbol: string) => ({
 export const COMPANY_FINANCIALS_WIDGET_CONFIG = (symbol: string) => ({
   symbol: symbol.toUpperCase(),
   colorTheme: "dark",
-  isTransparent: "true",
+  isTransparent: true,
   locale: "zh_TW",
   width: "100%",
   height: 650,

@@ -82,7 +82,7 @@ const SearchCommand = ({ open, onOpenChange }: SearchCommandProps) => {
           <CommandEmpty>沒有找到結果</CommandEmpty>
         )}
         {!loading && results.length > 0 && (
-          <CommandGroup heading="結果">
+          <CommandGroup heading="熱門股票">
             {results.map((item) => (
               <CommandItem
                 key={item.symbol}

@@ -17,7 +17,7 @@ const Home = () => {
         <section className="home-section grid w-full gap-8">
           <div className="md:col-span-1 xl:col-span-1">
             <TradingViewWidget
-              title="股市行情"
+              title="股市趨勢"
               scriptUrl={`${scriptUrl}market-overview.js`}
               config={MARKET_OVERVIEW_WIDGET_CONFIG}
               className="custom-chart"
