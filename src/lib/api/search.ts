@@ -34,6 +34,12 @@ const FINNHUB_API_KEY = (import.meta as any).env?.VITE_FINNHUB_API_KEY as
   | string
   | undefined;
 
+const SUPABASE_FUNCTION_URL = (import.meta as any).env
+  ?.VITE_SUPABASE_FUNCTION_URL as string | undefined;
+const SUPABASE_ANON_KEY = (import.meta as any).env?.VITE_SUPABASE_ANON_KEY as
+  | string
+  | undefined;
+
 type CacheEntry<T = unknown> = { expiry: number; data: T };
 const MAX_CACHE_SIZE = 100;
 
@@ -85,21 +91,67 @@ async function fetchJSON<T>(
   }
 }
 
+async function fetchProxyJSON<T>(
+  apiPath: string,
+  params: Record<string, string>,
+  revalidateSeconds: number,
+): Promise<T> {
+  const allParams = { ...params, apiPath: apiPath };
+
+  const url = `${SUPABASE_FUNCTION_URL}?${new URLSearchParams(allParams).toString()}`;
+
+  const now = Date.now();
+  const cached = cacheStore.get(url);
+  if (cached && cached.expiry > now) {
+    return cached.data as T;
+  }
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+    // !!! 關鍵修改：新增 Authorization 標頭 !!!
+    const res = await fetch(url, {
+      method: "GET",
+      headers: {
+        // 這是 Supabase Functions 要求的驗證標頭
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        "Content-Type": "application/json",
+      },
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      // 處理 Supabase Function 執行本身的錯誤
+      if (res.status === 401) {
+        throw new Error(
+          `Supabase Auth Error: Function denied access. Check your Anon Key. :: ${text}`,
+        );
+      }
+      throw new Error(
+        `HTTP ${res.status} ${res.statusText} for ${url} :: ${text}`,
+      );
+    }
+
+    const data: T = await res.json();
+    pruneCache();
+    cacheStore.set(url, {
+      expiry: Date.now() + revalidateSeconds * 1000,
+      data,
+    });
+    return data;
+  } catch (e) {
+    // ... (錯誤處理) ...
+    throw e;
+  }
+}
+
 export async function searchStocks(
   query?: string,
 ): Promise<StockWithWatchlistStatus[]> {
   try {
-    const token = FINNHUB_API_KEY;
-    const baseUrl = FINNHUB_BASE_URL || "https://finnhub.io/api/v1";
-
-    if (!token) {
-      console.error(
-        "Error in stock search:",
-        new Error("FINNHUB API key is not configured"),
-      );
-      return [];
-    }
-
     const trimmed = typeof query === "string" ? query.trim() : "";
 
     let results: FinnhubSearchResult[] = [];
@@ -110,8 +162,12 @@ export async function searchStocks(
       const profiles = await Promise.all(
         top.map(async (sym) => {
           try {
-            const url = `${baseUrl}/stock/profile2?symbol=${encodeURIComponent(sym)}&token=${token}`;
-            const profile = await fetchJSON<any>(url, 3600); // 1h
+            const params = { symbol: sym };
+            const profile = await fetchProxyJSON<any>(
+              "/stock/profile2",
+              params,
+              3600,
+            );
             return { sym, profile } as { sym: string; profile: any };
           } catch (e) {
             console.error("Error fetching profile2 for", sym, e);
@@ -139,8 +195,12 @@ export async function searchStocks(
         })
         .filter((x): x is FinnhubSearchResult => Boolean(x));
     } else {
-      const url = `${baseUrl}/search?q=${encodeURIComponent(trimmed)}&token=${token}`;
-      const data = await fetchJSON<FinnhubSearchResponse>(url, 1800); // 30m
+      const params = { q: trimmed };
+      const data = await fetchProxyJSON<FinnhubSearchResponse>(
+        "/search",
+        params,
+        1800,
+      );
       results = Array.isArray(data?.result) ? data.result : [];
     }
 
