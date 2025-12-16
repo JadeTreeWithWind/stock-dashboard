@@ -27,12 +27,12 @@ export type StockWithWatchlistStatus = {
   isInWatchlist: boolean;
 };
 
-const FINNHUB_BASE_URL = (import.meta as any).env?.VITE_FINNHUB_BASE_URL as
-  | string
-  | undefined;
-const FINNHUB_API_KEY = (import.meta as any).env?.VITE_FINNHUB_API_KEY as
-  | string
-  | undefined;
+// const FINNHUB_BASE_URL = (import.meta as any).env?.VITE_FINNHUB_BASE_URL as
+//   | string
+//   | undefined;
+// const FINNHUB_API_KEY = (import.meta as any).env?.VITE_FINNHUB_API_KEY as
+//   | string
+//   | undefined;
 
 const SUPABASE_FUNCTION_URL = (import.meta as any).env
   ?.VITE_SUPABASE_FUNCTION_URL as string | undefined;
@@ -54,42 +54,42 @@ function pruneCache() {
   }
 }
 
-async function fetchJSON<T>(
-  url: string,
-  revalidateSeconds: number,
-): Promise<T> {
-  const now = Date.now();
-  const cached = cacheStore.get(url);
-  if (cached && cached.expiry > now) {
-    return cached.data as T;
-  }
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
-    const res = await fetch(url, {
-      headers: { Accept: "application/json" },
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
-    if (!res.ok) {
-      const text = await res.text().catch(() => "");
-      throw new Error(
-        `HTTP ${res.status} ${res.statusText} for ${url} :: ${text}`,
-      );
-    }
-    const data: T = await res.json();
-    pruneCache();
-    cacheStore.set(url, { expiry: now + revalidateSeconds * 1000, data });
-    return data;
-  } catch (e) {
-    if (e instanceof Error && e.name === "AbortError") {
-      console.error("fetchJSON timeout:", url);
-    } else {
-      console.error("fetchJSON error:", e);
-    }
-    throw e;
-  }
-}
+// async function fetchJSON<T>(
+//   url: string,
+//   revalidateSeconds: number,
+// ): Promise<T> {
+//   const now = Date.now();
+//   const cached = cacheStore.get(url);
+//   if (cached && cached.expiry > now) {
+//     return cached.data as T;
+//   }
+//   try {
+//     const controller = new AbortController();
+//     const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+//     const res = await fetch(url, {
+//       headers: { Accept: "application/json" },
+//       signal: controller.signal,
+//     });
+//     clearTimeout(timeoutId);
+//     if (!res.ok) {
+//       const text = await res.text().catch(() => "");
+//       throw new Error(
+//         `HTTP ${res.status} ${res.statusText} for ${url} :: ${text}`,
+//       );
+//     }
+//     const data: T = await res.json();
+//     pruneCache();
+//     cacheStore.set(url, { expiry: now + revalidateSeconds * 1000, data });
+//     return data;
+//   } catch (e) {
+//     if (e instanceof Error && e.name === "AbortError") {
+//       console.error("fetchJSON timeout:", url);
+//     } else {
+//       console.error("fetchJSON error:", e);
+//     }
+//     throw e;
+//   }
+// }
 
 async function fetchProxyJSON<T>(
   apiPath: string,
