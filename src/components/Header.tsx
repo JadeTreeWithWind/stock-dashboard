@@ -17,7 +17,7 @@ const Header = () => {
             height={32}
             className="h-8 w-auto cursor-pointer"
           />
-          <span className="text-3xl font-bold text-white">美股儀表板</span>
+          <span className="text-3xl font-bold text-white">股市儀表板</span>
         </Link>
         <nav>
           {/*<NavItems/>*/}

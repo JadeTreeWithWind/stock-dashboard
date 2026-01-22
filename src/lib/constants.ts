@@ -4,6 +4,11 @@ export const NAV_ITEMS = [
   // { href: "/watchlist", label: "追蹤清單" },
 ];
 
+export const TRADINGVIEW_SCRIPT_URL_BASE =
+  "https://s3.tradingview.com/external-embedding/embed-widget-";
+export const DEFAULT_STOCK_SYMBOL = "AAPL";
+export const CACHE_REVALIDATE_DURATION = 1800; // seconds
+
 // 投資目標
 export const INVESTMENT_GOALS = [
   { value: "Growth", label: "成長" }, // 尋求資本利得
