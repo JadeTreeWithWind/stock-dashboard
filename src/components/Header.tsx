@@ -1,9 +1,12 @@
-// import NavItems from "@/components/NavItems";
 import { useState } from "react";
 import { Link } from "react-router";
-import SearchCommand from "@/components/SearchCommand.tsx";
-import ScrollToTop from "@/components/ScrollToTop.tsx";
+import SearchCommand from "@/components/SearchCommand";
+import ScrollToTop from "@/components/ScrollToTop";
 
+/**
+ * 頁面頭部組件
+ * 包含 Logo、導航與搜尋功能
+ */
 const Header = () => {
   const [open, setOpen] = useState(false);
   return (
@@ -20,7 +23,6 @@ const Header = () => {
           <span className="text-3xl font-bold text-white">股市儀表板</span>
         </Link>
         <nav>
-          {/*<NavItems/>*/}
           <ul className="flex flex-col gap-3 p-2 font-medium sm:flex-row sm:gap-10">
             <li>
               <button

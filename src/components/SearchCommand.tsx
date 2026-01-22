@@ -1,20 +1,24 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router";
 import {
   CommandDialog,
-  CommandInput,
-  CommandList,
   CommandEmpty,
   CommandGroup,
+  CommandInput,
   CommandItem,
+  CommandList,
 } from "@/components/ui/command";
-import { searchStocks, type StockWithWatchlistStatus } from "@/lib/api/search";
-import { useNavigate } from "react-router";
+import { type StockWithWatchlistStatus, searchStocks } from "@/lib/api/search";
 
 type SearchCommandProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
+/**
+ * 搜尋對話框組件
+ * 提供股票搜尋與導航功能
+ */
 const SearchCommand = ({ open, onOpenChange }: SearchCommandProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
@@ -58,7 +62,7 @@ const SearchCommand = ({ open, onOpenChange }: SearchCommandProps) => {
   return (
     <CommandDialog
       open={open}
-      onOpenChange={(v) => {
+      onOpenChange={(v: boolean) => {
         onOpenChange(v);
         if (!v) {
           // reset state when closing to keep UX tidy
