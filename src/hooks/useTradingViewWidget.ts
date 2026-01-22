@@ -1,5 +1,13 @@
 import { useEffect, useRef } from "react";
 
+/**
+ * TradingView Widget Hook
+ * 負責動態載入 TradingView 的 script 並掛載到 DOM
+ *
+ * @param scriptUrl - TradingView script URL
+ * @param config - Widget 設定參數
+ * @param height - Widget 高度 (預設 600)
+ */
 const useTradingViewWidget = (
   scriptUrl: string,
   config: Record<string, unknown>,

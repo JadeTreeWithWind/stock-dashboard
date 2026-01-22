@@ -2,7 +2,7 @@
 // Uses Vite env vars: VITE_FINNHUB_BASE_URL and VITE_FINNHUB_API_KEY
 // Provides searchStocks(query?) that returns a minimal mapped list for UI consumption.
 
-import { POPULAR_STOCK_SYMBOLS } from "@/lib/constants";
+import { CACHE_REVALIDATE_DURATION, POPULAR_STOCK_SYMBOLS } from "@/lib/constants";
 
 // Types
 export type FinnhubSearchResult = {
@@ -27,18 +27,8 @@ export type StockWithWatchlistStatus = {
   isInWatchlist: boolean;
 };
 
-const FINNHUB_BASE_URL = (import.meta as any).env?.VITE_FINNHUB_BASE_URL as
-  | string
-  | undefined;
-const FINNHUB_API_KEY = (import.meta as any).env?.VITE_FINNHUB_API_KEY as
-  | string
-  | undefined;
-
-const SUPABASE_FUNCTION_URL = (import.meta as any).env
-  ?.VITE_SUPABASE_FUNCTION_URL as string | undefined;
-const SUPABASE_ANON_KEY = (import.meta as any).env?.VITE_SUPABASE_ANON_KEY as
-  | string
-  | undefined;
+const SUPABASE_FUNCTION_URL = import.meta.env.VITE_SUPABASE_FUNCTION_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 type CacheEntry<T = unknown> = { expiry: number; data: T };
 const MAX_CACHE_SIZE = 100;
@@ -54,43 +44,15 @@ function pruneCache() {
   }
 }
 
-async function fetchJSON<T>(
-  url: string,
-  revalidateSeconds: number,
-): Promise<T> {
-  const now = Date.now();
-  const cached = cacheStore.get(url);
-  if (cached && cached.expiry > now) {
-    return cached.data as T;
-  }
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
-    const res = await fetch(url, {
-      headers: { Accept: "application/json" },
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
-    if (!res.ok) {
-      const text = await res.text().catch(() => "");
-      throw new Error(
-        `HTTP ${res.status} ${res.statusText} for ${url} :: ${text}`,
-      );
-    }
-    const data: T = await res.json();
-    pruneCache();
-    cacheStore.set(url, { expiry: now + revalidateSeconds * 1000, data });
-    return data;
-  } catch (e) {
-    if (e instanceof Error && e.name === "AbortError") {
-      console.error("fetchJSON timeout:", url);
-    } else {
-      console.error("fetchJSON error:", e);
-    }
-    throw e;
-  }
-}
 
+
+/**
+ * Fetch JSON with proxy and caching
+ * @param apiPath The API path to call
+ * @param params Query parameters
+ * @param revalidateSeconds Cache duration in seconds
+ * @returns Parsed JSON response
+ */
 async function fetchProxyJSON<T>(
   apiPath: string,
   params: Record<string, string>,
@@ -148,6 +110,11 @@ async function fetchProxyJSON<T>(
   }
 }
 
+/**
+ * Search for stocks or get popular ones
+ * @param query Search query string
+ * @returns List of stocks with watchlist status
+ */
 export async function searchStocks(
   query?: string,
 ): Promise<StockWithWatchlistStatus[]> {
@@ -166,7 +133,7 @@ export async function searchStocks(
             const profile = await fetchProxyJSON<any>(
               "/stock/profile2",
               params,
-              3600,
+              CACHE_REVALIDATE_DURATION * 2, // Long cache for profiles
             );
             return { sym, profile } as { sym: string; profile: any };
           } catch (e) {
@@ -199,7 +166,7 @@ export async function searchStocks(
       const data = await fetchProxyJSON<FinnhubSearchResponse>(
         "/search",
         params,
-        1800,
+        CACHE_REVALIDATE_DURATION,
       );
       results = Array.isArray(data?.result) ? data.result : [];
     }
