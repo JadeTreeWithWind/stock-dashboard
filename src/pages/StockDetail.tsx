@@ -21,52 +21,56 @@ const StockDetail = () => {
   const symbol = (rawSymbol || DEFAULT_STOCK_SYMBOL).toUpperCase();
 
   return (
-    <main>
+    <main className="relative min-h-screen">
       <Header />
-      <div className="container min-h-screen py-6">
+      <div className="container py-10 pb-20">
         {/* 2-column responsive grid: left and right sections */}
         <div className="grid grid-cols-1 gap-8 xl:grid-cols-2">
           {/* Left column */}
-          <section className="space-y-6">
+          <section className="animate-fade-in-up space-y-6">
             <TradingViewWidget
               key={`${symbol}-symbol-info`}
               scriptUrl={`${TRADINGVIEW_SCRIPT_URL_BASE}symbol-info.js`}
               config={SYMBOL_INFO_WIDGET_CONFIG(symbol)}
+              className="glass-card overflow-hidden rounded-xl p-1"
             />
 
             <TradingViewWidget
               key={`${symbol}-candle`}
               scriptUrl={`${TRADINGVIEW_SCRIPT_URL_BASE}advanced-chart.js`}
               config={CANDLE_CHART_WIDGET_CONFIG(symbol)}
-              className="custom-chart"
+              className="glass-card overflow-hidden rounded-xl p-1"
             />
 
             <TradingViewWidget
               key={`${symbol}-baseline`}
               scriptUrl={`${TRADINGVIEW_SCRIPT_URL_BASE}advanced-chart.js`}
               config={BASELINE_WIDGET_CONFIG(symbol)}
-              className="custom-chart"
+              className="glass-card overflow-hidden rounded-xl p-1"
             />
           </section>
 
           {/* Right column */}
-          <section className="space-y-6">
+          <section className="animate-fade-in-up space-y-6 delay-100">
             <TradingViewWidget
               key={`${symbol}-technical-analysis`}
               scriptUrl={`${TRADINGVIEW_SCRIPT_URL_BASE}technical-analysis.js`}
               config={TECHNICAL_ANALYSIS_WIDGET_CONFIG(symbol)}
+              className="glass-card overflow-hidden rounded-xl p-1"
             />
 
             <TradingViewWidget
               key={`${symbol}-company-profile`}
               scriptUrl={`${TRADINGVIEW_SCRIPT_URL_BASE}symbol-profile.js`}
               config={COMPANY_PROFILE_WIDGET_CONFIG(symbol)}
+              className="glass-card overflow-hidden rounded-xl p-1"
             />
 
             <TradingViewWidget
               key={`${symbol}-company-financials`}
               scriptUrl={`${TRADINGVIEW_SCRIPT_URL_BASE}financials.js`}
               config={COMPANY_FINANCIALS_WIDGET_CONFIG(symbol)}
+              className="glass-card overflow-hidden rounded-xl p-1"
             />
           </section>
         </div>

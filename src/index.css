@@ -138,7 +138,42 @@
   }
 
   body {
-    @apply text-foreground bg-gray-900;
+    @apply text-foreground bg-[#0a0a0a] selection:bg-yellow-500/30 selection:text-yellow-200;
+    background-image:
+      radial-gradient(
+        circle at 50% 0%,
+        rgba(88, 98, 255, 0.05) 0%,
+        transparent 60%
+      ),
+      radial-gradient(
+        circle at 95% 20%,
+        rgba(232, 186, 64, 0.05) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 0% 30%,
+        rgba(15, 237, 190, 0.03) 0%,
+        transparent 50%
+      );
+    background-attachment: fixed;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply relative border border-white/5 bg-gray-900/40 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-yellow-500/30 hover:bg-gray-900/60 hover:shadow-[0_0_30px_-10px_rgba(234,179,8,0.1)];
+  }
+
+  .glass-panel {
+    @apply border border-white/5 bg-gray-900/60 backdrop-blur-xl;
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent;
+  }
+
+  .text-gradient-gold {
+    @apply bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-600 bg-clip-text text-transparent;
   }
 }
 
@@ -148,7 +183,7 @@
   }
 
   .yellow-btn {
-    @apply h-12 cursor-pointer rounded-lg bg-gradient-to-b from-yellow-400 to-yellow-500 text-base font-medium text-gray-950 shadow-lg hover:from-yellow-500 hover:to-yellow-400 disabled:opacity-50;
+    @apply h-12 cursor-pointer rounded-lg bg-gradient-to-r from-yellow-400 to-yellow-500 text-base font-bold text-gray-950 shadow-[0_0_20px_-5px_rgba(234,179,8,0.4)] transition-all hover:scale-[1.02] hover:shadow-[0_0_30px_-5px_rgba(234,179,8,0.6)] active:scale-[0.98] disabled:opacity-50 disabled:shadow-none;
   }
 
   .home-wrapper {
@@ -160,7 +195,7 @@
   }
 
   .header {
-    @apply z-50 h-[70px] w-full bg-gray-800;
+    @apply sticky top-0 z-50 w-full border-b border-white/5 bg-gray-900/70 backdrop-blur-xl transition-all duration-300;
   }
 
   .header-wrapper {
@@ -204,7 +239,7 @@
   }
 
   .form-input {
-    @apply h-12 rounded-lg border-gray-600 bg-gray-800 px-3 py-3 text-base text-white placeholder:text-gray-500 focus:!border-yellow-500 focus:ring-0;
+    @apply h-12 rounded-lg border-white/10 bg-white/5 px-4 py-3 text-base text-white transition-all placeholder:text-gray-500 focus:border-yellow-500/50 focus:bg-white/10 focus:shadow-[0_0_20px_-5px_rgba(234,179,8,0.1)] focus:ring-0;
   }
 
   .select-trigger {
@@ -384,7 +419,7 @@
   }
 
   .news-item {
-    @apply w-full cursor-pointer rounded-lg border border-gray-600 bg-gray-800 p-4 duration-200 hover:border-gray-600;
+    @apply w-full cursor-pointer rounded-xl border border-white/5 bg-gray-800/30 p-5 backdrop-blur-sm duration-300 hover:-translate-y-1 hover:border-yellow-500/20 hover:bg-gray-800/80 hover:shadow-xl;
   }
 
   .news-tag {
@@ -564,3 +599,17 @@
 .scrollbar-hide-default::-webkit-scrollbar-thumb:hover {
   background-color: #9095a1;
 }
+
+/* Custom Animations */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  opacity: 0; /* start hidden */
+}
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+
