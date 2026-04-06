@@ -29,9 +29,13 @@ const useTradingViewWidget = (
     containerRef.current.dataset.loaded = "true";
 
     return () => {
-      if (containerRef.current) {
-        containerRef.current.innerHTML = "";
-        delete containerRef.current.dataset.loaded;
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      // 在 cleanup 中直接讀取 ref.current 是安全的：
+      // React 在 cleanup 執行完成後才會將 ref 設為 null
+      const container = containerRef.current;
+      if (container) {
+        container.innerHTML = "";
+        delete container.dataset.loaded;
       }
     };
   }, [scriptUrl, config, height]);

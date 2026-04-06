@@ -32,6 +32,7 @@ const Header = () => {
           <ul className="flex items-center gap-4">
             <li>
               <button
+                aria-label="搜尋股票"
                 className="group flex w-40 cursor-pointer items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-gray-300 transition-all hover:bg-white/10 hover:text-yellow-400 hover:shadow-lg hover:shadow-yellow-500/10"
                 onClick={() => setOpen(true)}
               >
