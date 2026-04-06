@@ -1,25 +1,30 @@
-import { StrictMode } from "react";
+import { lazy, Suspense, StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 
 import { createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
-import Home from "@/pages/Home.tsx";
-// import WatchList from "@/pages/Watchlist.tsx";
-import StockDetail from "@/pages/StockDetail.tsx";
+
+// 路由懶加載：首屏只載入必要代碼
+const Home = lazy(() => import("@/pages/Home"));
+const StockDetail = lazy(() => import("@/pages/StockDetail"));
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Home />,
+    element: (
+      <Suspense fallback={null}>
+        <Home />
+      </Suspense>
+    ),
   },
-  // {
-  //   path: "/watchlist",
-  //   element: <WatchList />,
-  // },
   {
     path: "/:symbol",
-    element: <StockDetail />,
+    element: (
+      <Suspense fallback={null}>
+        <StockDetail />
+      </Suspense>
+    ),
   },
 ]);
 

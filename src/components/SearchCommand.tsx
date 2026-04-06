@@ -53,8 +53,6 @@ const SearchCommand = ({ open, onOpenChange }: SearchCommandProps) => {
   }, [debouncedTerm, open]);
 
   const handleSelectStock = (symbol: string) => {
-    console.log(`Stock selected: ${symbol}`);
-    // Optionally close the dialog after selection
     onOpenChange(false);
     navigate(`/${symbol}`);
   };

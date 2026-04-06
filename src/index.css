@@ -139,6 +139,7 @@
 
   body {
     @apply text-foreground bg-[#0a0a0a] selection:bg-yellow-500/30 selection:text-yellow-200;
+    /* 靜態漸層背景：避免 background-attachment:fixed 在行動裝置上觸發整頁重繪 */
     background-image:
       radial-gradient(
         circle at 50% 0%,
@@ -155,7 +156,6 @@
         rgba(15, 237, 190, 0.03) 0%,
         transparent 50%
       );
-    background-attachment: fixed;
   }
 }
 

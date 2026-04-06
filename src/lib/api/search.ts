@@ -1,22 +1,28 @@
-// Finnhub-backed search utilities
-// Uses Vite env vars: VITE_FINNHUB_BASE_URL and VITE_FINNHUB_API_KEY
+// Finnhub-backed search utilities via Supabase Edge Function proxy.
 // Provides searchStocks(query?) that returns a minimal mapped list for UI consumption.
 
 import { CACHE_REVALIDATE_DURATION, POPULAR_STOCK_SYMBOLS } from "@/lib/constants";
 
 // Types
 export type FinnhubSearchResult = {
-  symbol: string; // e.g., "AAPL"
-  description: string; // Company name or description
-  displaySymbol?: string; // sometimes contains exchange-qualified symbol
+  symbol: string;
+  description: string;
+  displaySymbol?: string;
   type?: string;
-  // internal passthrough for exchange when built from profile2
+  /** Internal passthrough for exchange when built from profile2 */
   __exchange?: string;
 };
 
 export type FinnhubSearchResponse = {
   count?: number;
   result: FinnhubSearchResult[];
+};
+
+/** Minimal stock profile returned by /stock/profile2 */
+type FinnhubProfile = {
+  name?: string;
+  ticker?: string;
+  exchange?: string;
 };
 
 export type StockWithWatchlistStatus = {
@@ -44,8 +50,6 @@ function pruneCache() {
   }
 }
 
-
-
 /**
  * Fetch JSON with proxy and caching
  * @param apiPath The API path to call
@@ -72,11 +76,9 @@ async function fetchProxyJSON<T>(
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-    // !!! 關鍵修改：新增 Authorization 標頭 !!!
     const res = await fetch(url, {
       method: "GET",
       headers: {
-        // 這是 Supabase Functions 要求的驗證標頭
         Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
         "Content-Type": "application/json",
       },
@@ -86,7 +88,6 @@ async function fetchProxyJSON<T>(
 
     if (!res.ok) {
       const text = await res.text().catch(() => "");
-      // 處理 Supabase Function 執行本身的錯誤
       if (res.status === 401) {
         throw new Error(
           `Supabase Auth Error: Function denied access. Check your Anon Key. :: ${text}`,
@@ -105,7 +106,6 @@ async function fetchProxyJSON<T>(
     });
     return data;
   } catch (e) {
-    // ... (錯誤處理) ...
     throw e;
   }
 }
@@ -129,16 +129,15 @@ export async function searchStocks(
       const profiles = await Promise.all(
         top.map(async (sym) => {
           try {
-            const params = { symbol: sym };
-            const profile = await fetchProxyJSON<any>(
+            const profile = await fetchProxyJSON<FinnhubProfile>(
               "/stock/profile2",
-              params,
-              CACHE_REVALIDATE_DURATION * 2, // Long cache for profiles
+              { symbol: sym },
+              CACHE_REVALIDATE_DURATION * 2, // profiles change rarely
             );
-            return { sym, profile } as { sym: string; profile: any };
+            return { sym, profile };
           } catch (e) {
             console.error("Error fetching profile2 for", sym, e);
-            return { sym, profile: null } as { sym: string; profile: any };
+            return { sym, profile: null as FinnhubProfile | null };
           }
         }),
       );
@@ -146,21 +145,18 @@ export async function searchStocks(
       results = profiles
         .map(({ sym, profile }) => {
           const symbol = sym.toUpperCase();
-          const name: string | undefined =
-            profile?.name || profile?.ticker || undefined;
-          const exchange: string | undefined = profile?.exchange || undefined;
-          if (!name)
-            return undefined as unknown as FinnhubSearchResult | undefined;
+          const name = profile?.name ?? profile?.ticker;
+          if (!name) return null;
           const r: FinnhubSearchResult = {
             symbol,
             description: name,
             displaySymbol: symbol,
             type: "Common Stock",
-            __exchange: exchange,
+            __exchange: profile?.exchange,
           };
           return r;
         })
-        .filter((x): x is FinnhubSearchResult => Boolean(x));
+        .filter((x): x is FinnhubSearchResult => x !== null);
     } else {
       const params = { q: trimmed };
       const data = await fetchProxyJSON<FinnhubSearchResponse>(
@@ -173,30 +169,24 @@ export async function searchStocks(
 
     const mapped: StockWithWatchlistStatus[] = results
       .map((r) => {
-        const upper = (r.symbol || "").toUpperCase();
-        const name = r.description || upper;
-        const exchangeFromDisplay =
-          (r.displaySymbol as string | undefined) || undefined;
-        const exchangeFromProfile =
-          (r.__exchange as string | undefined) || undefined;
+        const symbol = (r.symbol || "").toUpperCase();
+        const name = r.description || symbol;
         let exchange = "Unknown";
-        if (exchangeFromDisplay && exchangeFromDisplay.includes(":")) {
-          exchange = exchangeFromDisplay.split(":")[0];
-        } else if (exchangeFromProfile) {
-          exchange = exchangeFromProfile;
+        if (r.displaySymbol?.includes(":")) {
+          exchange = r.displaySymbol.split(":")[0];
+        } else if (r.__exchange) {
+          exchange = r.__exchange;
         } else if (r.type?.toLowerCase().includes("common stock")) {
-          // Only default to US for common stocks when exchange is truly unknown
+          // 無法從 API 取得交易所時，Common Stock 預設為美股
           exchange = "US";
         }
-        const type = r.type || "Stock";
-        const item: StockWithWatchlistStatus = {
-          symbol: upper,
+        return {
+          symbol,
           name,
           exchange,
-          type,
+          type: r.type ?? "Stock",
           isInWatchlist: false,
         };
-        return item;
       })
       .slice(0, 15);
 
